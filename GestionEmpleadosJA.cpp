@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <locale.h>
 using namespace std;
 
 // Definici贸n de una estructura para un Empleado
@@ -88,16 +89,18 @@ void eliminarEmpleado() {
 
 // Funci贸n principal con men煤
 int main() {
+	setlocale(LC_CTYPE, "Spanish");
     int opcion;
     do {
-        cout << "\n--- Sistema de Gesti贸n de Empleados ---\n";
+        cout << "\n--- Sistema de Gesti髇 de Empleados ---\n";
         cout << "1. Agregar empleado\n";
         cout << "2. Mostrar empleados\n";
         cout << "3. Actualizar salario de empleado\n";
         cout << "4. Eliminar empleado\n";
         cout << "5. Salir\n";
-        cout << "Seleccione una opci贸n: ";
+        cout << "Seleccione una opci髇: ";
         cin >> opcion;
+        cin.clear(); 
         cin.ignore();  
         
         switch (opcion) {

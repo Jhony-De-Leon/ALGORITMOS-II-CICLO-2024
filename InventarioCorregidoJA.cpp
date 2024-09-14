@@ -97,6 +97,8 @@ int main() {
         cout << "5. Salir\n";
         cout << "Seleccione una opción: ";
         cin >> opcion;
+        cin.clear(); 
+        cin.ignore(); 
         // cin.ignore();  
         
         switch (opcion) {
