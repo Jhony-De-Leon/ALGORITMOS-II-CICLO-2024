@@ -1,48 +1,75 @@
 #include <iostream>
 #include <string>
-#include <locale.h>
+#include <limits>
 using namespace std;
 
-// DefiniciÃ³n de una estructura para un Empleado
+// Definición de una estructura para un Empleado
 struct Empleado {
-    int id;
+    string id;  // Cambiado a string para permitir letras y números
     string nombre;
     float salario;
 };
 
-// Definir el tamaÃ±o mÃ¡ximo para la lista de empleados
+// Definir el tamaño máximo para la lista de empleados
 const int MAX_EMPLEADOS = 50;
 Empleado empleados[MAX_EMPLEADOS];
 int totalEmpleados = 0;
 
-// FunciÃ³n para agregar un empleado
-void agregarEmpleado() {
-    if (totalEmpleados < MAX_EMPLEADOS) {
-        Empleado nuevoEmpleado;
-        cout << "Ingrese el ID del empleado: ";
-        cin >> nuevoEmpleado.id;
-        cin.ignore ();
-        
-        cout << "Ingrese el nombre del empleado: ";
-        cin >> nuevoEmpleado.nombre;  
-        cout << "Ingrese el salario del empleado: ";
-        cin >> nuevoEmpleado.salario;
-        
-        empleados[totalEmpleados] = nuevoEmpleado;
-        totalEmpleados++;  
-        cout << "Empleado agregado exitosamente.\n";
-    } else {
-        cout << "No se puede agregar mÃ¡s empleados.\n";
+// Función para ingresar una cadena con validación
+string ingresarCadena(const string& mensaje) {
+    string valor;
+    cout << mensaje;
+    getline(cin, valor);
+    return valor;
+}
+
+// Función para ingresar un número decimal dentro de un rango
+float ingresarNumeroDecimal(const string& mensaje, float min, float max) {
+    float valor;
+    while (true) {
+        cout << mensaje;
+        cin >> valor;
+
+        if (cin.fail() || valor < min || valor > max) {
+            cout << "Error: Ingrese un número decimal válido entre " << min << " y " << max << ": ";
+            cin.clear();  // Limpiar estado de error
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Descartar la entrada no válida
+        } else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Limpiar el buffer
+            return valor;
+        }
     }
 }
 
-// FunciÃ³n para mostrar todos los empleados
+// Función para agregar un empleado
+void agregarEmpleado() {
+    if (totalEmpleados < MAX_EMPLEADOS) {
+        Empleado nuevoEmpleado;
+
+        // Ingresar el ID del empleado
+        nuevoEmpleado.id = ingresarCadena("Ingrese el ID del empleado: ");
+
+        // Leer el nombre del empleado
+        nuevoEmpleado.nombre = ingresarCadena("Ingrese el nombre del empleado: ");
+
+        // Ingresar el salario del empleado
+        nuevoEmpleado.salario = ingresarNumeroDecimal("Ingrese el salario del empleado: ", 0.0f, numeric_limits<float>::max());
+
+        empleados[totalEmpleados] = nuevoEmpleado;
+        totalEmpleados++;
+        cout << "Empleado agregado exitosamente.\n";
+    } else {
+        cout << "No se puede agregar más empleados.\n";
+    }
+}
+
+// Función para mostrar todos los empleados
 void mostrarEmpleados() {
     if (totalEmpleados == 0) {
         cout << "No hay empleados registrados.\n";
     } else {
         cout << "Lista de empleados:\n";
-        for (int i = 0; i <= totalEmpleados; i++) {  
+        for (int i = 0; i < totalEmpleados; i++) {
             cout << "ID: " << empleados[i].id
                  << " | Nombre: " << empleados[i].nombre
                  << " | Salario: " << empleados[i].salario << endl;
@@ -50,36 +77,30 @@ void mostrarEmpleados() {
     }
 }
 
-// FunciÃ³n para actualizar el salario de un empleado
+// Función para actualizar el salario de un empleado
 void actualizarSalario() {
-    int id;
-    cout << "Ingrese el ID del empleado: ";
-    cin >> id;
-    
+    string id = ingresarCadena("Ingrese el ID del empleado: ");
+
     for (int i = 0; i < totalEmpleados; i++) {
         if (empleados[i].id == id) {
-            cout << "Ingrese el nuevo salario: ";
-            cin >> empleados[i].salario;
-        //Error: falta mensaje de confirmacion
-        cout << "Salario actualizado, buen día \n."; 
+            empleados[i].salario = ingresarNumeroDecimal("Ingrese el nuevo salario: ", 0.0f, numeric_limits<float>::max());
+            cout << "Salario actualizado exitosamente.\n";
             return;
         }
     }
     cout << "Empleado no encontrado.\n";
 }
 
-// FunciÃ³n para eliminar un empleado
+// Función para eliminar un empleado
 void eliminarEmpleado() {
-    int id;
-    cout << "Ingrese el ID del empleado a eliminar: ";
-    cin >> id;
-    
+    string id = ingresarCadena("Ingrese el ID del empleado a eliminar: ");
+
     for (int i = 0; i < totalEmpleados; i++) {
         if (empleados[i].id == id) {
-            for (int j = i; j < totalEmpleados; j++) {  
+            for (int j = i; j < totalEmpleados - 1; j++) {
                 empleados[j] = empleados[j + 1];
             }
-            totalEmpleados--;  
+            totalEmpleados--;
             cout << "Empleado eliminado exitosamente.\n";
             return;
         }
@@ -87,9 +108,8 @@ void eliminarEmpleado() {
     cout << "Empleado no encontrado.\n";
 }
 
-// FunciÃ³n principal con menÃº
+// Función principal con menú
 int main() {
-	setlocale(LC_CTYPE, "Spanish");
     int opcion;
     do {
         cout << "\n--- Sistema de Gestión de Empleados ---\n";
@@ -99,10 +119,15 @@ int main() {
         cout << "4. Eliminar empleado\n";
         cout << "5. Salir\n";
         cout << "Seleccione una opción: ";
-        cin >> opcion;
-        cin.clear(); 
-        cin.ignore();  
-        
+
+        while (!(cin >> opcion) || opcion < 1 || opcion > 5) {  // Validación de número para opción del menú
+            cout << "Error: Ingrese una de las opciones dadas.\n";
+            cin.clear();  // Limpiar estado de error
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Descartar la entrada no válida
+        }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Limpiar el buffer
+
         switch (opcion) {
             case 1:
                 agregarEmpleado();
@@ -119,10 +144,10 @@ int main() {
             case 5:
                 cout << "Saliendo del sistema...\n";
                 break;
-            default:
-                cout << "OpciÃ³n no vÃ¡lida.\n";
         }
     } while (opcion != 5);
-    
+
     return 0;
-}
+	}  //JHONY ABRAHAM DE LEÓN PÉREZ
+	   //0905-24-2282
+  
