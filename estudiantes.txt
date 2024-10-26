@@ -1,0 +1,3 @@
+1000,Jhony Abraham,de Le¢n P‚rez,Ingeniería en sistemas,Jutiapa,El Progreso,31293105,78434798,911,deleonabraham520@gamial.com,12,9,2005,19,2024
+1000,Jhony Abraham,De Le¢n P‚rez,Ingeniería en sistemas,Jutiapa,El Progreso,31293105,78434798,911,deleonabraham520@gamil.com,12,9,2005,19,2024
+1000,Geofrey Emmanuel,Esquivel Florian,Administración de empresas,Guatemala,Guatemala,12344455,11110099,912,geo30@gmail.com,23,12,2003,20,2024

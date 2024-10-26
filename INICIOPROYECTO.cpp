@@ -3,6 +3,9 @@
 #include <string>
 #include <ctime>
 #include <limits>
+#include <fstream>
+#include <sstream>
+#include <cstdlib> // Para usar atoi
 
 using namespace std;
 
@@ -20,6 +23,14 @@ struct Estudiante {
     int diaNacimiento, mesNacimiento, anioNacimiento;
     int edad;
     int anioIngreso;
+
+    string toString() const {
+        stringstream ss;
+        ss << id << "," << nombre << "," << apellido << "," << carrera << "," << departamento << "," << municipio << ","
+           << telefonoPersonal << "," << telefonoCasa << "," << telefonoEmergencia << "," << correoElectronico << ","
+           << diaNacimiento << "," << mesNacimiento << "," << anioNacimiento << "," << edad << "," << anioIngreso;
+        return ss.str();
+    }
 };
 
 const string departamentos[] = {
@@ -155,6 +166,64 @@ void mostrarEstudiantes(const vector<Estudiante>& estudiantes) {
     }
 }
 
+void guardarEstudianteEnArchivo(const Estudiante& estudiante) {
+    ofstream archivo("estudiantes.txt", ios::app); // Abrir en modo append
+    if (archivo.is_open()) {
+        archivo << estudiante.toString() << endl;
+        archivo.close();
+    } else {
+        cout << "Error al abrir el archivo para guardar los datos.\n";
+    }
+}
+
+void mostrarDatosDesdeArchivo() {
+    ifstream archivo("estudiantes.txt");
+    if (archivo.is_open()) {
+        string linea;
+        cout << "\n--- Datos de Estudiantes Registrados desde el Archivo ---\n";
+        while (getline(archivo, linea)) {
+            stringstream ss(linea);
+            Estudiante estudiante;
+            string temp;
+
+            getline(ss, temp, ','); estudiante.id = atoi(temp.c_str());
+            getline(ss, estudiante.nombre, ',');
+            getline(ss, estudiante.apellido, ',');
+            getline(ss, estudiante.carrera, ',');
+            getline(ss, estudiante.departamento, ',');
+            getline(ss, estudiante.municipio, ',');
+            getline(ss, estudiante.telefonoPersonal, ',');
+            getline(ss, estudiante.telefonoCasa, ',');
+            getline(ss, estudiante.telefonoEmergencia, ',');
+            getline(ss, estudiante.correoElectronico, ',');
+            getline(ss, temp, ','); estudiante.diaNacimiento = atoi(temp.c_str());
+            getline(ss, temp, ','); estudiante.mesNacimiento = atoi(temp.c_str());
+            getline(ss, temp, ','); estudiante.anioNacimiento = atoi(temp.c_str());
+            getline(ss, temp, ','); estudiante.edad = atoi(temp.c_str());
+            getline(ss, temp, ','); estudiante.anioIngreso = atoi(temp.c_str());
+
+            // Mostrar en formato de lista
+            cout << "ID: " << estudiante.id << endl;
+            cout << "Nombre: " << estudiante.nombre << " " << estudiante.apellido << endl;
+            cout << "Carrera: " << estudiante.carrera << endl;
+            cout << "Departamento: " << estudiante.departamento << endl;
+            cout << "Municipio: " << estudiante.municipio << endl;
+            cout << "Teléfono Personal: " << estudiante.telefonoPersonal << endl;
+            cout << "Teléfono de Casa: " << estudiante.telefonoCasa << endl;
+            cout << "Teléfono de Emergencia: " << estudiante.telefonoEmergencia << endl;
+            cout << "Correo Electrónico: " << estudiante.correoElectronico << endl;
+            cout << "Fecha de Nacimiento: " << estudiante.diaNacimiento << "/" 
+                 << estudiante.mesNacimiento << "/" << estudiante.anioNacimiento << endl;
+            cout << "Edad: " << estudiante.edad << endl;
+            cout << "Año de Ingreso: " << estudiante.anioIngreso << endl;
+            cout << "----------------------------------------\n";
+        }
+        archivo.close();
+    } else {
+        cout << "Error al abrir el archivo para mostrar los datos.\n";
+    }
+}
+
 void registrarEstudiante(vector<Estudiante>& estudiantes) {
     Estudiante nuevoEstudiante; 
     nuevoEstudiante.id = generarCodigo(); 
@@ -179,10 +248,9 @@ void registrarEstudiante(vector<Estudiante>& estudiantes) {
     cout << "Ingrese el correo electrónico: ";
     cin >> nuevoEstudiante.correoElectronico;
 
-    // Nueva entrada para la fecha de nacimiento
     while (true) {
         cout << "Ingrese la fecha de nacimiento (DD/MM/AAAA): ";
-        char separator; // Para leer el '/' como separador
+        char separator; 
         if (cin >> nuevoEstudiante.diaNacimiento >> separator 
                   >> nuevoEstudiante.mesNacimiento >> separator 
                   >> nuevoEstudiante.anioNacimiento) {
@@ -209,39 +277,45 @@ void registrarEstudiante(vector<Estudiante>& estudiantes) {
     }
 
     estudiantes.push_back(nuevoEstudiante);
+    guardarEstudianteEnArchivo(nuevoEstudiante); // Guardar en archivo
 
     cout << "Estudiante registrado exitosamente!\n";
     mostrarEstudiantes(estudiantes);
 }
 
-void menu() {
+int main() {
     vector<Estudiante> estudiantes;
     int opcion;
 
-    while (true) {
-        cout << "\n--- Sistema de Registro de Estudiantes ---\n";
-        cout << "1. Registrar un estudiante\n";
-        cout << "2. Salir\n";
+    do {
+        cout << "\n--- Menú Principal ---\n";
+        cout << "1. Registrar Estudiante\n";
+        cout << "2. Mostrar Estudiantes Registrados\n";
+        cout << "3. Mostrar Datos desde Archivo\n";
+        cout << "4. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
 
-        if (!(cin >> opcion)) {
-            cout << "Valor inválido. Intente de nuevo.\n";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            continue; // Repetir el ciclo
+        switch(opcion) {
+            case 1:
+                registrarEstudiante(estudiantes);
+                break;
+            case 2:
+                mostrarEstudiantes(estudiantes);
+                break;
+            case 3:
+                mostrarDatosDesdeArchivo();
+                break;
+            case 4:
+                cout << "Saliendo...\n";
+                break;
+            default:
+                cout << "Opción inválida. Intente de nuevo.\n";
+                break;
         }
+    } while (opcion != 4);
 
-        if (opcion == 1) {
-            registrarEstudiante(estudiantes);
-        } else if (opcion == 2) {
-            cout << "Saliendo del programa...\n";
-            break;
-        } else {
-            cout << "Opción inválida. Intente de nuevo.\n";
-        }
-    }
-}
-
-int main() {
-    menu();
     return 0;
 }
+
+
